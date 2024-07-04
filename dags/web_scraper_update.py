@@ -19,10 +19,9 @@ from web_scraper_helpers import (
 def scraper_function(webpages_param):
     all_dictionaries_of_apartments = []
     all_current_pages = []
-    german_states_numbers_of_pages = {"bremen" : 20000}
-    #{"hamburg": 20000,"bl-schleswig-holstein": 20000,"bremen" : 20000, "berlin" : 20000,"bl-hessen" : 20000,"bl-niedersachsen" : 20000
-                                  #,"bl-baden-wuerttemberg" :20000,"bl-bayern" : 20000,"bl-mecklenburg-vorpommern" : 20000,"bl-nordrhein-westfalen" : 20000,"bl-rheinland-pfalz" :20000,"bl-saarland" :20000,"bl-sachsen" :20000,"bl-sachsen-anhalt" :20000,"bl-schleswig-holstein" :20000,"bl-thueringen" :20000}
-
+    german_states_numbers_of_pages = {"hamburg": 20000,"bl-schleswig-holstein": 20000,"bremen" : 20000, "berlin" : 20000,"bl-hessen" : 20000,"bl-niedersachsen" : 20000
+                                  ,"bl-baden-wuerttemberg" :20000,"bl-bayern" : 20000,"bl-mecklenburg-vorpommern" : 20000,"bl-nordrhein-westfalen" : 20000,"bl-rheinland-pfalz" :20000,"bl-saarland" :20000,"bl-sachsen" :20000,"bl-sachsen-anhalt" :20000,"bl-schleswig-holstein" :20000,"bl-thueringen" :20000}
+    
     tipoi_akiniton = ["wohnungen","haeuser"]
     main_link_first_part = 'https://www.immowelt.de/suche/'
     main_link_second_part = '/kaufen?d=true&sd=DESC&sf=RELEVANCE&sp='
@@ -86,5 +85,3 @@ def scraper_function(webpages_param):
     return all_current_pages,webpages_param,all_dictionaries_of_apartments
 
 
-#{"hamburg": 20000, "bl-schleswig-holstein": 20000,"bremen" : 20000, "berlin" : 20000,"bl-hessen" : 20000,"bl-niedersachsen" : 20000
-#                                  ,"bl-baden-wuerttemberg" :20000,"bl-bayern" : 20000,"bl-mecklenburg-vorpommern" : 20000,"bl-nordrhein-westfalen" : 20000,"bl-rheinland-pfalz" :20000,"bl-saarland" :20000,"bl-sachsen" :20000,"bl-sachsen-anhalt" :20000,"bl-schleswig-holstein" :20000,"bl-thueringen" :20000}

@@ -149,7 +149,7 @@ def cleanup_csvs_created_under_run_update():
         os.remove(all_current_pages_path)
     except FileNotFoundError:pass
     try:
-        existing_webpages_path = "/opt/airflow/dags/csvs/temporary_csvs/existing_webpages.csv"
+        existing_webpages_path = "/opt/airflow/dags/csvs/temporary_csvs/existing_webpages_before_update.csv"
         os.remove(existing_webpages_path)
     except FileNotFoundError:pass
 
