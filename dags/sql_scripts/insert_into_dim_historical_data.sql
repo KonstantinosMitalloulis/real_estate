@@ -3,4 +3,8 @@ SELECT ft.webpage
 FROM real_estate.fact_table ft
 LEFT JOIN real_estate.all_current_webpages acw ON ft.webpage = acw.current_webpage
 WHERE acw.current_webpage IS NULL
+<<<<<<< HEAD
 ON CONFLICT (webpage) DO NOTHING;
+=======
+ON CONFLICT (webpage) DO NOTHING;
+>>>>>>> origin/master
