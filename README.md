@@ -6,6 +6,7 @@ Viele Grüße,
 Konstantinos Mitalloulis
 
 
+
 Hello!
 
 This project has collected data from the website www.immowelt.de using web scraping. The project focuses on apartments and houses in Germany that are for sale. All used services (Postgres, Airflow, Metabase, pgAdmin) are included within Docker Compose, and the folders dags, logs, and plugins are created upon the first Docker Compose up. Two DAGs have been programmed. The first one is for the initial loading of the database. It consolidates all initial CSVs, transforms them, and finally imports them into the database. The database created after the first load follows the star schema, so it contains a fact table and many dimension tables. The second DAG is for updating the database through web scraping on the Immowelt website. Both DAGs are orchestrated by Airflow. At the end of both DAGs, a message is sent via a Discord channel, informing that the DAG has run successfully. In the csvs folder, there are three additional subfolders, namely back_up_csvs, initial_csvs, and temporary_csvs. In back_up_csvs, backup files related to the respective update are stored and archived, and in temporary_csvs, files that serve for data exchange between the tasks of the DAG during the update run are stored. The temporary_csvs folder is emptied after each update. In initial_csvs, the web-scraped files relevant for the first DAG, containing raw data, can be found. The creation of all folders and subfolders is part of the first task of the DAG: Initialization.
