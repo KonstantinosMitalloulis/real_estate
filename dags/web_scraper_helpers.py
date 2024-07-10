@@ -1,3 +1,7 @@
+"""
+Diese Datei enthält alle Funktionen, die zum Web-Scraping von Immowelt beitragen.
+"""
+
 import re
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -35,8 +39,8 @@ def construction_year_function(tipos_idioktisias,inserted_soup):
         construction_year_house = inserted_soup.find_all('sd-cell', {'class': 'cell ng-star-inserted'})
         for i in construction_year_house:
             if "Baujahr" in i.get_text(strip=True):
-                construction_year = i.get_text(strip=True)[-4:]#.split(":")[1]
-                break  # Exit the loop once the construction year is found
+                construction_year = i.get_text(strip=True)[-4:]
+                break 
     return construction_year
 
 def commercial_or_private_provider_property(inserted_soup):
@@ -54,7 +58,6 @@ def location_details(inserted_soup):
     pattern_postal_code = r"\b\d{5}\b"
     pattern_city = r"\b\d{5}\b\s+(.+)"
     address_street = inserted_soup.find('span', {'data-cy': 'address-street'}).get_text(strip=True)
-    #print(address_street)
     address_city = inserted_soup.find('span', {'data-cy': 'address-city'}).get_text(strip=True)
     postal_code =  re.search(pattern_postal_code, address_city).group(0)
     city = re.search(pattern_city, address_city).group(1)
@@ -109,7 +112,7 @@ def property_condition(inserted_soup):
             break
 
     if zustand_text:
-        property_condition = zustand_text# Output: renoviert / saniert
+        property_condition = zustand_text
     else:
         property_condition = "blank"
     return property_condition

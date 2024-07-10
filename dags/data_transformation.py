@@ -1,12 +1,13 @@
 # data_transformations.py
 
+"""
+Mit dem folgenden Code werden die Rohdaten verarbeitet. Die main-Funktion transform_dataframe kriegt ein Dataframe als Input und gibt eine verarbeitetes Dataframe aus.
+"""
+
 import pandas as pd
 import re
 
 def transform_dataframe(dataframe):
-    #functions
-    #edo kanoume to energy consumption float ,apomakrinoume monades metris oste na xoume mono arithmous ,opou exoume blank to kanoume 99999
-    #dimiourgoume sto telos mia kainourgia stili cleaned_converted_energy_consumption
     def energy_consumption(dataframe):
         def clean_and_convert_energy_consumption(energy_consumption_raw_str):
             if energy_consumption_raw_str == "blank":
@@ -14,14 +15,10 @@ def transform_dataframe(dataframe):
             else:
                 cleaned_energy_consumption = energy_consumption_raw_str.replace('\xa0', '').replace('.', '').replace(',', '.').replace("- Warmwasser enthalten","").replace('kWh/(m²·a)', '').strip()
             return float(cleaned_energy_consumption)
-            # Apply the function to the price column
         dataframe['final_energy_consumption'] = dataframe['energy_consumption'].apply(clean_and_convert_energy_consumption)
-
-        #if dataframe['property_area_final'].unique():
         return dataframe
 
-    #Edo antikathisto stin arxiki stili energy_class tin h me tin g klasi gia na me volepsei argotera stin formula gia na vrisko tin energeiako klasi vasi tis energy consumption
-    #Dimiourgo kainourgia stili tin energy_class_after_replacing_h_with_g
+
     def replacing_energy_class_h_into_g(dataframe):
         def replace_letters_h_g(energy_class_raw_str):
             if energy_class_raw_str == "H":
@@ -31,14 +28,9 @@ def transform_dataframe(dataframe):
             return replaced_energy_class
         
         dataframe['energy_class_after_replacing_h_with_g'] = dataframe['energy_class'].apply(replace_letters_h_g)
-
-        #if dataframe['property_area_final'].unique():
         return dataframe
 
 
-    #Vrika mia formula sto chatgpt pou antistoixei tis enegry_consumptions se energeiakes klasseis
-    #Xrisimopoio tin kainourgia stili cleaned_converted_energy_consumption kai apo autin mesi tis sinartis energy_class_formula 
-    #dimiourgo mia kainourgia stili tin energy_class_based_on_energy_consumption
     def energy_class_based_on_energy_consumption(dataframe):
         def energy_class_formula(energy_consumption_integer):
             if energy_consumption_integer == 99999:
@@ -59,13 +51,7 @@ def transform_dataframe(dataframe):
                 return "F"
             else:return "G"
         dataframe['energy_class_based_on_energy_consumption'] = dataframe['final_energy_consumption'].apply(energy_class_formula)
-        
-    #energy_class
         return dataframe
-
-
-    #Edo dimiourgo en teli tin teliki energeiaki klasi , opou an den exei timi sto arxiko energy_class oairnei tin timi apo to energy_class_based_on_energy_consumption
-
 
     def assign_final_energy_class(dataframe):
         dataframe["final_energy_class"] = dataframe.apply(
@@ -74,12 +60,6 @@ def transform_dataframe(dataframe):
         )
         return dataframe
 
-
-
-
-
-    #Plot Area
-    #Metratrepo tin polt area se float , apomakrino monades metris ,metrapeo blank se 99999 kai dimiourgo stili
     def plot_area_meters(dataframe):
         def clean_and_convert_plot_area(plot_area_raw_str):
             if plot_area_raw_str == "blank":
@@ -87,15 +67,9 @@ def transform_dataframe(dataframe):
             else:
                 cleaned_plot_area = plot_area_raw_str.replace('\xa0', '').replace('.', '').replace(',', '.').replace('m²', '').strip()
             return float(cleaned_plot_area)
-            # Apply the function to the price column
         dataframe['final_plot_area'] = dataframe['plot_area'].apply(clean_and_convert_plot_area)
-
-        #if dataframe['property_area_final'].unique():
         return dataframe
 
-
-    #Property price square meters
-    #Idia logiki me plot_area
     def square_meters(dataframe):
         def clean_and_convert_area(square_meters_raw_str):
             if square_meters_raw_str == "blank":
@@ -105,53 +79,25 @@ def transform_dataframe(dataframe):
             return float(cleaned_square_meters)
             # Apply the function to the price column
         dataframe['final_property_area'] = dataframe['property_area'].apply(clean_and_convert_area)
-
-        #if dataframe['property_area_final'].unique():
         return dataframe
 
 
-
-    #Kapoies poleis erxontao apo to scraping me to postal code.O parakato kodikas eksipiretei sto na ta xorisei an exrontai mazi
-    #Version for city_raw splitting
     def city_raw_transformation(dataframe):
         def keep_city(city_raw):
             try:
                 return re.search(r'[^0-9]+[^0-9]*[^0-9]',city_raw).group(0).strip()
             except AttributeError:return city_raw
-        #Dimiourgia stilis pou krata to city_after_splitting
         dataframe["city_after_splitting"] = dataframe['city'].apply(lambda x: keep_city(x))
         
-    #an den vrei kati to kanei 99999 gia na elegxo an doulevei o elegxos kala
+
         def keep_postal_code(city_raw):
             try:
                 return re.search(r'[0-9]+[0-9]*[0-9]',city_raw).group(0).strip()
             except AttributeError:return "99999"
-        
-        #Dimiourgia stilis pou krata to postal code after splitting, an den eixe kati fernei 99999  
-        dataframe["postal_code_after_splitting"] = dataframe['city'].apply(lambda x: keep_postal_code(x))
-
-        #DIAVASE TA PARAKATO SXOLIA
-
-        #Ta tria parakato kommatia kodika den ksero an xreiazontai gia auto ta kano comment kai vlepoume
-        #control for correct data splitting
-        #def contains_digit(s):
-        #    return bool(re.search(r'\d', s))
-        
-        #control for dataframe['city_after_splitting']
-        #for city in dataframe['city_after_splitting'].unique():
-        #    if contains_digit(city):
-        #        return f"Problem : {city}"
-        
-        #control for dataframe['postal_code_after_splitting']
-        #for postal_code in dataframe['postal_code_after_splitting'].unique():
-        #    if not contains_digit(postal_code):
-        #        return f"Problem : {postal_code}"    
+        dataframe["postal_code_after_splitting"] = dataframe['city'].apply(lambda x: keep_postal_code(x))  
         return dataframe
 
 
-
-    #Dimiourgia telikis stilis postal code
-    #last version tis sinartisis autis
     def assign_final_postal_code(dataframe):
         dataframe["final_postal_code"] = dataframe.apply(
             lambda row: row["postal_code"] if row["postal_code"] != "blank" else row["postal_code_after_splitting"], 
@@ -159,7 +105,7 @@ def transform_dataframe(dataframe):
         )
         return dataframe
 
-    # PALIA VERSION TIS SINARTISIS AUTIS
+    # old version
     def assign_final_postal_code_palia(dataframe):
         dataframe["final_postal_code"] = np.where(
             dataframe["postal_code"] != "blank", 
@@ -168,10 +114,8 @@ def transform_dataframe(dataframe):
         )
         return dataframe
 
-    #Dimiourgia telikis stilis postal code
 
     def renaming_splittingcity_finalcity(dataframe):
-        # Renaming a single column
         def final_city(city_str):
             try:
                 cleaned_city = re.search(r'[/s]*[A-Za-zäüöß. ,-]+',city_str).group(0).strip()
@@ -181,14 +125,10 @@ def transform_dataframe(dataframe):
         dataframe['final_city'] =dataframe['final_city'].str.lower()
         return dataframe
 
-
-    
-    #transformation_of_price
     def property_price_raw(dataframe):
         def clean_and_convert_price(property_price_raw_str):
             
             if (property_price_raw_str == "auf Anfrage") or ("€" not in property_price_raw_str):
-                # Auf Anfrage einai katopin sizitisis, vazo 99999 gia na kano tin metatropi se float sta ipoloipa
                 cleaned_price_str = "99999 €"
             else:
 
@@ -197,18 +137,12 @@ def transform_dataframe(dataframe):
             return cleaned_price_str
         
         def clean_currency_convert_into_float(property_price_final_raw_str):
-            #cleaned_from_currency_str = property_price_final_raw_str.replace('€', '')
             return float(property_price_final_raw_str.replace('€', ''))
-
-        # Apply the function to the price column
         dataframe['property_price_currency_in_place_string'] = dataframe['property_price'].apply(clean_and_convert_price)
         dataframe['final_property_price'] = dataframe['property_price_currency_in_place_string'].apply(clean_currency_convert_into_float)
         dataframe['final_property_price'] = dataframe['property_price_currency_in_place_string'].apply(clean_currency_convert_into_float)
         return dataframe
 
-
-
-    #Epeksergasia ton domation
     def property_rooms(dataframe):
         def clean_property_rooms(property_rooms_raw_str):
             property_rooms_str = str(property_rooms_raw_str)
@@ -219,7 +153,6 @@ def transform_dataframe(dataframe):
         dataframe['final_property_rooms'] = dataframe['property_rooms'].apply(clean_property_rooms)
         return dataframe
 
-    #Epeksergasia Orofon
     def property_floor(dataframe):
         def propery_floor_first_step(property_floor_raw_str_first):
             if 'Untergeschoss' in property_floor_raw_str_first:
@@ -251,7 +184,6 @@ def transform_dataframe(dataframe):
 
         return dataframe
 
-    #DIORTHOSI GIA COMMERCIAL H PRIVATE
     def commercial_or_private_provider_property(dataframe):
         def commercial_or_private(commercial_or_private_raw_str):
             if commercial_or_private_raw_str.strip() == "Gewerblicher Anbieter":
@@ -266,7 +198,6 @@ def transform_dataframe(dataframe):
             lambda row: row["category_of_house"] if row["category_of_house"] != "blank" else row["property_type"], 
             axis=1
         )
-        # Convert values in the 'City' column to lowercase
         dataframe['final_category_of_home_second_step'] = dataframe['category_of_home_first_step'].str.lower()
 
         def translating_category_of_home(category_home_str):
@@ -307,7 +238,6 @@ def transform_dataframe(dataframe):
         return dataframe
 
     def splitting_address_number(dataframe):
-        # Convert values in the 'City' column to lowercase
         dataframe['final_address_number_first_step'] = dataframe['address'].str.lower()
 
         def number_separate(address_str):
@@ -343,10 +273,6 @@ def transform_dataframe(dataframe):
         dataframe['final_offerer_name'] = dataframe['offerer_name'].str.lower()
         return dataframe
 
-
-
-        #Teliko Vima , Kratao mono stiles pou me endiaferoun
-#Teliko Vima , Kratao mono stiles pou me endiaferoun
     def keep_only_columns_of_interest(dataframe):
         # List of columns to keep
         columns_to_keep = ['online_id', 'property_webpage', 'property_type', 'delivery_time','final_energy_consumption' , 'final_energy_class','final_plot_area','final_property_area','final_postal_code','final_property_price'
@@ -355,7 +281,6 @@ def transform_dataframe(dataframe):
         return dataframe
     
     def data_types_convert(dataframe):
-        # Convert the 'deliverytime' column to datetime
         dataframe['delivery_time'] = pd.to_datetime(dataframe['delivery_time'])
         dataframe["final_construction_year"] = dataframe["final_construction_year"].astype(int)
         return dataframe

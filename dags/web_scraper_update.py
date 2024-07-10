@@ -1,3 +1,7 @@
+"""
+Die scraper_function scrapt die Webseite von Immowelt
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd

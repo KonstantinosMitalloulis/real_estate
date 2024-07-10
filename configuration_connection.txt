@@ -1,0 +1,28 @@
+Zugriff auf pgadmin:http://localhost:5050
+Credentials:
+email:admin@admin.com
+password:admin
+
+Herstellen von neuem Server:
+General Tab: name:real_estate
+Connection Tab:host name/address : 'postgres'
+port: 5432
+maintenance database: airflow
+username:airflow
+password:airflow
+
+Zugriff auf Airflow:http://localhost:5050
+
+Verbindung zwischen Airflow und Postgres:
+Conn id:Gib einen Namen deiner Präferenz ein
+Conn Type:Postgres
+Host:postgres
+Login:airflow
+Password:airflow
+Port:5432
+
+
+
+
+
+

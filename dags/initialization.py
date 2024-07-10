@@ -1,3 +1,8 @@
+"""
+Initialization DAG: Er dient zur Initialisierung der Datenbank. Als Datenquellen dienen die CSV-Dateien,
+die im Ordner initial_csvs zu finden sind und mittels Web Scraping generiert wurden.
+"""
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
@@ -32,10 +37,10 @@ create_directories_exchange_files_task = PythonOperator(
     dag=dag,
 )
 
-# Task to create all tables
+
 create_all_tables_task = PostgresOperator(
     task_id='create_all_tables_initialization',
-    postgres_conn_id='real_estate_germany',  # Replace with your Postgres connection ID
+    postgres_conn_id='real_estate_germany',  
     sql=read_sql_file('/opt/airflow/dags/sql_scripts/create_scripts.sql'),
     dag=dag,
 )
@@ -72,7 +77,7 @@ insert_data_into_stage_task = PythonOperator(
 
 insert_data_dimensions_fact_task = PostgresOperator(
     task_id='insert_data_dimensions_fact_initialization',
-    postgres_conn_id='real_estate_germany',  # Replace with your Postgres connection ID
+    postgres_conn_id='real_estate_germany', 
     sql=read_sql_file('/opt/airflow/dags/sql_scripts/insert_data_to_dimensions_fact.sql'),
     dag=dag,
 )
@@ -86,7 +91,7 @@ insert_dim_german_geography_task = PythonOperator(
 
 
 
-# Task to send success message to Discord
+
 discord_webhook_url = 'https://discord.com/api/webhooks/1255880045684064286/vjIH6LVAyTSUgI-qc98zRIxDMnLUua3pa5Tigl2xp9DCVqKuN0eEmq_PjPm5egeC61ej' 
 
 send_success_message_task = PythonOperator(

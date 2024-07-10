@@ -1,3 +1,7 @@
+"""
+Diese Datei enthält alle Funktionen, die beim Ausführen der Initialization und Update Dags helfen.
+"""
+
 #libraries
 import pandas as pd
 import psycopg2
@@ -73,10 +77,6 @@ def getting_data_update(**kwargs):
     query = "select distinct webpage from real_estate.fact_table;"
     cursor.execute(query)
     existing_webpages = cursor.fetchall()  
-    # Retrieve column names
-    #colnames = [desc[0] for desc in cursor.description]
-    
-    #conn.commit()
     cursor.close()
     conn.close()
     webpages = [row[0] for row in existing_webpages]
@@ -88,13 +88,13 @@ def getting_data_update(**kwargs):
 
 
 
-#Functions inside the dag update
+
 def webpages_before_update():
     existing_webpages_list = getting_data_update()
     return existing_webpages_list
 
 
-#Edo kano export tis existing wepages oste na kontrolaro , an diavazei sosta tis idi existing webpages
+
 def export_webpages_before_update(**kwargs):
     existing_webpages_before_update_df = pd.DataFrame(webpages_before_update(), columns=['webpage'])
     existing_webpages_before_update_df.to_csv("/opt/airflow/dags/csvs/temporary_csvs/existing_webpages_before_update.csv", index=False)
@@ -103,7 +103,7 @@ def export_webpages_before_update(**kwargs):
     existing_webpages_before_update_df.to_csv(existing_webpages_before_update_file_name, index=False)
 
 
-#Edo tha treksei o scraper kai thelo na kratiso oles tis selides
+
 def run_web_scraper_update(**kwargs):
     iparxouses_selides_lista = webpages_before_update()
     all_current_pages_lista,epistrofi_scraper_iparxouses_selides_lista,new_entries_lista = scraper_function(iparxouses_selides_lista)
@@ -157,9 +157,9 @@ def cleanup_csvs_created_under_run_update():
 
 
 
-#Initialization
+#Dag:Initialization
 
-#for table german_geography
+
 def insert_data_into_german_geography_initialization(**kwargs):
     transformed_german_geography_dataframe = pd.read_csv("/opt/airflow/dags/csvs/temporary_csvs/transformed_german_geography_initialization.csv")
 
@@ -185,19 +185,13 @@ def insert_data_into_german_geography_initialization(**kwargs):
 
 def transform_german_geography(postcodes,geocoord):
     geocoord = geocoord.rename(columns={'Unnamed: 0': 'Plz'})
-    # Replace 'Schlewig-Holstein' with 'Schleswig-Holstein' in the 'Bundesland' column
     postcodes['Bundesland'] = postcodes['Bundesland'].replace('Schlewig-Holstein', 'Schleswig-Holstein')
-
-    # Convert all values in the 'Ort' and 'Bundesland' columns to lowercase
     postcodes['Ort'] = postcodes['Ort'].str.lower()
     postcodes['Bundesland'] = postcodes['Bundesland'].str.lower()
-
-    # Group by 'Plz' and 'Bundesland', and concatenate 'Ort'
     grouped = postcodes.groupby(['Plz', 'Bundesland']).agg({
         'Ort': ', '.join
     }).reset_index()
 
-    # Merge the geocoord DataFrame with the grouped DataFrame on 'Plz'
     result = pd.merge(geocoord, grouped, on='Plz', how='inner')
     result = result.rename(columns={'Plz': 'postal_code', 'Ort': 'city','Bundesland': 'german_state'})
     return result
@@ -208,7 +202,7 @@ def transformation_german_geography_initialization(**context):
     df_result = transform_german_geography(df_postcodes,df_plz_geocoord)
     df_result.to_csv("/opt/airflow/dags/csvs/temporary_csvs/transformed_german_geography_initialization.csv", index=False)
 
-#for the other tables
+
 
 def merge_csv_files_initialization(directory,file_pattern="output*.csv", delimiter=','):
     """
@@ -221,13 +215,8 @@ def merge_csv_files_initialization(directory,file_pattern="output*.csv", delimit
     """
     
     full_file_pattern = os.path.join(directory,file_pattern)
-    # Find all files matching the pattern
     csv_files = glob.glob(full_file_pattern)
-
-    # Initialize an empty list to store DataFrames
     dataframes = pd.DataFrame()
-
-    # Loop through the list of files and read each one into a DataFrame
     for file in csv_files:
         df = pd.read_csv(file, delimiter=delimiter)
         dataframes = pd.concat([dataframes,df],ignore_index=True)
@@ -258,8 +247,7 @@ def insert_data_into_stage_initialization(**kwargs):
     conn.close()
 
 
-#FUNCTIONS INSIDE THE DAG INITILIAZATION_TESTING
-# Function to read SQL file
+
 def create_directories_exchange_files_initialization():
     os.makedirs('/opt/airflow/dags/csvs/temporary_csvs', exist_ok=True)
     os.makedirs('/opt/airflow/dags/csvs/back_up_csvs', exist_ok=True)
@@ -271,7 +259,6 @@ def read_sql_file(filepath):
 
 def read_csv_initialization():
     df_merged_initialization = merge_csv_files_initialization('/opt/airflow/dags/csvs/initial_csvs')
-    #df_merged_initialization.to_csv("/opt/airflow/dags/csvs/initial_csvs/df_merged_initialization.csv", index=False)
     df_merged_initialization.to_csv("/opt/airflow/dags/csvs/temporary_csvs/df_merged_initialization.csv", index=False)
 
 
