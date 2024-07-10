@@ -1,12 +1,13 @@
-"""
-Diese Datei enthält alle Funktionen, die zum Web-Scraping von Immowelt beitragen.
-"""
-
 import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pytz
 import psycopg2
+
+"""
+Diese Datei enthält alle Funktionen, die zum Web-Scraping von Immowelt beitragen.
+"""
+
 #Final Version
 def rooms_area_function(soupa):
     first_part_infos= soupa.find_all('div', {'class': 'hardfact ng-star-inserted'})
@@ -40,7 +41,7 @@ def construction_year_function(tipos_idioktisias,inserted_soup):
         for i in construction_year_house:
             if "Baujahr" in i.get_text(strip=True):
                 construction_year = i.get_text(strip=True)[-4:]
-                break 
+                break  
     return construction_year
 
 def commercial_or_private_provider_property(inserted_soup):
@@ -58,6 +59,7 @@ def location_details(inserted_soup):
     pattern_postal_code = r"\b\d{5}\b"
     pattern_city = r"\b\d{5}\b\s+(.+)"
     address_street = inserted_soup.find('span', {'data-cy': 'address-street'}).get_text(strip=True)
+    #print(address_street)
     address_city = inserted_soup.find('span', {'data-cy': 'address-city'}).get_text(strip=True)
     postal_code =  re.search(pattern_postal_code, address_city).group(0)
     city = re.search(pattern_city, address_city).group(1)

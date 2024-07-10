@@ -88,11 +88,10 @@ def getting_data_update(**kwargs):
 
 
 
-
+#Functions inside the dag update
 def webpages_before_update():
     existing_webpages_list = getting_data_update()
     return existing_webpages_list
-
 
 
 def export_webpages_before_update(**kwargs):
@@ -101,7 +100,6 @@ def export_webpages_before_update(**kwargs):
     current_date = datetime.now().strftime('%Y-%m-%d')
     existing_webpages_before_update_file_name = f"/opt/airflow/dags/csvs/back_up_csvs/existing_webpages_before_update/existing_webpages_before_update_{current_date}.csv"
     existing_webpages_before_update_df.to_csv(existing_webpages_before_update_file_name, index=False)
-
 
 
 def run_web_scraper_update(**kwargs):
@@ -157,9 +155,9 @@ def cleanup_csvs_created_under_run_update():
 
 
 
-#Dag:Initialization
+#Initialization
 
-
+#for table german_geography
 def insert_data_into_german_geography_initialization(**kwargs):
     transformed_german_geography_dataframe = pd.read_csv("/opt/airflow/dags/csvs/temporary_csvs/transformed_german_geography_initialization.csv")
 
@@ -191,7 +189,6 @@ def transform_german_geography(postcodes,geocoord):
     grouped = postcodes.groupby(['Plz', 'Bundesland']).agg({
         'Ort': ', '.join
     }).reset_index()
-
     result = pd.merge(geocoord, grouped, on='Plz', how='inner')
     result = result.rename(columns={'Plz': 'postal_code', 'Ort': 'city','Bundesland': 'german_state'})
     return result
@@ -202,7 +199,7 @@ def transformation_german_geography_initialization(**context):
     df_result = transform_german_geography(df_postcodes,df_plz_geocoord)
     df_result.to_csv("/opt/airflow/dags/csvs/temporary_csvs/transformed_german_geography_initialization.csv", index=False)
 
-
+#for the other tables
 
 def merge_csv_files_initialization(directory,file_pattern="output*.csv", delimiter=','):
     """
@@ -247,10 +244,29 @@ def insert_data_into_stage_initialization(**kwargs):
     conn.close()
 
 
+#FUNCTIONS INSIDE THE DAG INITILIAZATION
 
 def create_directories_exchange_files_initialization():
-    os.makedirs('/opt/airflow/dags/csvs/temporary_csvs', exist_ok=True)
-    os.makedirs('/opt/airflow/dags/csvs/back_up_csvs', exist_ok=True)
+    base_path = r"/opt/airflow/dags/csvs"
+    main_folders = ["temporary_csvs", "back_up_csvs"]
+    for folder in main_folders:
+        folder_path = os.path.join(base_path, folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            print(f"Folder '{folder}' created at {folder_path}")
+        else:
+            print(f"Folder '{folder}' already exists at {folder_path}")
+    backup_subfolders = ["all_current_webpages", "existing_webpages_before_update", "new_entries"]
+    backup_base_path = os.path.join(base_path, "back_up_csvs")
+    for subfolder in backup_subfolders:
+        subfolder_path = os.path.join(backup_base_path, subfolder)
+        if not os.path.exists(subfolder_path):
+            os.makedirs(subfolder_path)
+            print(f"Subfolder '{subfolder}' created at {subfolder_path}")
+        else:
+            print(f"Subfolder '{subfolder}' already exists at {subfolder_path}")
+
+
 
 def read_sql_file(filepath):
     with open(filepath, 'r') as file:

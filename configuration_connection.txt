@@ -1,20 +1,31 @@
+Deutsch:
+
 Zugriff auf pgadmin:http://localhost:5050
 Credentials:
 email:admin@admin.com
 password:admin
 
-Herstellen von neuem Server:
+Zugriff auf Airflow:http://localhost:8080 
+
+Zugriff auf Metabase: http://localhost:3000
+
+Eforderliche Schritte zur erfolgreichen Ausführung des Codes bzw. Projekts , die vom Benutzer gemacht werden müssen:
+
+1.Herstellen von neuem Server:
+
 General Tab: name:real_estate
 Connection Tab:host name/address : 'postgres'
 port: 5432
 maintenance database: airflow
 username:airflow
 password:airflow
+2.Herstellen von Schema
 
-Zugriff auf Airflow:http://localhost:5050
+Name:real_estate
 
+3.
 Verbindung zwischen Airflow und Postgres:
-Conn id:Gib einen Namen deiner Präferenz ein
+Conn id:real_estate_germany
 Conn Type:Postgres
 Host:postgres
 Login:airflow
@@ -24,5 +35,37 @@ Port:5432
 
 
 
+Englisch:
+Access to pgAdmin: http://localhost:5050
+Credentials:
 
+Email: admin@admin.com
+Password: admin
+Access to Airflow: http://localhost:8080
+
+Access to Metabase: http://localhost:3000
+
+Steps required for the successful execution of the code/project that must be completed by the user:
+
+Create a new server:
+
+General Tab:
+Name: real_estate
+Connection Tab:
+Host name/address: 'postgres'
+Port: 5432
+Maintenance database: airflow
+Username: airflow
+Password: airflow
+Create a schema:
+
+Name: real_estate
+Connection between Airflow and Postgres:
+
+Conn ID:real_estate_germany
+Conn Type: Postgres
+Host: postgres
+Login: airflow
+Password: airflow
+Port: 5432
 

@@ -1,5 +1,4 @@
 # data_transformations.py
-
 """
 Mit dem folgenden Code werden die Rohdaten verarbeitet. Die main-Funktion transform_dataframe kriegt ein Dataframe als Input und gibt eine verarbeitetes Dataframe aus.
 """
@@ -18,7 +17,6 @@ def transform_dataframe(dataframe):
         dataframe['final_energy_consumption'] = dataframe['energy_consumption'].apply(clean_and_convert_energy_consumption)
         return dataframe
 
-
     def replacing_energy_class_h_into_g(dataframe):
         def replace_letters_h_g(energy_class_raw_str):
             if energy_class_raw_str == "H":
@@ -28,8 +26,9 @@ def transform_dataframe(dataframe):
             return replaced_energy_class
         
         dataframe['energy_class_after_replacing_h_with_g'] = dataframe['energy_class'].apply(replace_letters_h_g)
-        return dataframe
 
+        #if dataframe['property_area_final'].unique():
+        return dataframe
 
     def energy_class_based_on_energy_consumption(dataframe):
         def energy_class_formula(energy_consumption_integer):
@@ -77,10 +76,8 @@ def transform_dataframe(dataframe):
             else:
                 cleaned_square_meters = square_meters_raw_str.replace('\xa0', '').replace('.', '').replace(',', '.').replace('m²', '').strip()
             return float(cleaned_square_meters)
-            # Apply the function to the price column
         dataframe['final_property_area'] = dataframe['property_area'].apply(clean_and_convert_area)
         return dataframe
-
 
     def city_raw_transformation(dataframe):
         def keep_city(city_raw):
@@ -89,12 +86,11 @@ def transform_dataframe(dataframe):
             except AttributeError:return city_raw
         dataframe["city_after_splitting"] = dataframe['city'].apply(lambda x: keep_city(x))
         
-
         def keep_postal_code(city_raw):
             try:
                 return re.search(r'[0-9]+[0-9]*[0-9]',city_raw).group(0).strip()
             except AttributeError:return "99999"
-        dataframe["postal_code_after_splitting"] = dataframe['city'].apply(lambda x: keep_postal_code(x))  
+        dataframe["postal_code_after_splitting"] = dataframe['city'].apply(lambda x: keep_postal_code(x))
         return dataframe
 
 
@@ -142,6 +138,7 @@ def transform_dataframe(dataframe):
         dataframe['final_property_price'] = dataframe['property_price_currency_in_place_string'].apply(clean_currency_convert_into_float)
         dataframe['final_property_price'] = dataframe['property_price_currency_in_place_string'].apply(clean_currency_convert_into_float)
         return dataframe
+
 
     def property_rooms(dataframe):
         def clean_property_rooms(property_rooms_raw_str):
@@ -269,12 +266,10 @@ def transform_dataframe(dataframe):
         return dataframe
 
     def offerer_name(dataframe):
-        # Convert values in the 'City' column to lowercase
         dataframe['final_offerer_name'] = dataframe['offerer_name'].str.lower()
         return dataframe
 
     def keep_only_columns_of_interest(dataframe):
-        # List of columns to keep
         columns_to_keep = ['online_id', 'property_webpage', 'property_type', 'delivery_time','final_energy_consumption' , 'final_energy_class','final_plot_area','final_property_area','final_postal_code','final_property_price'
                            ,'final_property_rooms','final_property_floor','final_type_provider_property','final_category_of_home','final_construction_year','final_offerer_name','german_state','final_city']
         dataframe = dataframe[columns_to_keep]

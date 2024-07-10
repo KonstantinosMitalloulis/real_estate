@@ -110,7 +110,7 @@ insert_data_into_staging_table_task = PythonOperator(
 
 insert_data_dimensions_fact_task = PostgresOperator(
     task_id='insert_data_dimensions_fact_update',
-    postgres_conn_id='real_estate_germany', 
+    postgres_conn_id='real_estate_germany',  
     sql=read_sql_file('/opt/airflow/dags/sql_scripts/insert_data_to_dimensions_fact.sql'),
     dag=dag,
 )
